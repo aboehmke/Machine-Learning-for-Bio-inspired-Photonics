@@ -24,12 +24,24 @@ class neuralnet(object):
         self.nb_epoch   = nb_epoch
         self.loadData()
 
-    def loadData(self,trainfile='train.txt',testfile='test.txt',labels_train='labels_train.txt',labels_test='labels_test.txt'):
+    def loadData(self,path):
         '''
+        Takes path to directory containing spe files.
    	  Loads data from file into object.
    	  trainfile='train.txt',testfile='test.txt',labels_train='labels_train.txt',labels)test='labels_test.txt'
    	  '''       
-         
+        #,trainfile='train.txt',testfile='test.txt',labels_train='labels_train.txt',labels_test='labels_test.txt'):
+    
+        import SPEtoCSVml
+        import os
+        spefilenames = []
+        for root,dirs,files in os.walk(path):
+            for file in files:
+                if file.endswith('.spe'):
+                    spefilenames.append(file)
+        x = SPEtoCSVml.allSPEtoCSV(spefilenames)
+        trainfile = x[0]
+#        wrongsizefiles = x[1]
          
         self.train = pandas.read_csv(trainfile,header=None)
         self.test = pandas.read_csv(testfile,header=None)
@@ -39,19 +51,14 @@ class neuralnet(object):
         #Two-dimensional size-mutable, potentially heterogeneous tabular data structure
         #with labeled axes (rows and columns).
         
-        # header : int or list of ints, default ‘infer’. 
-        #Row number(s) to use as the column names, and the start of the data. 
-        #Default behavior is to infer the column names: 
-        #if no names are passed the behavior is identical to header=0 and 
-        #column names are inferred from the first line of the file.
-        #if column names are passed explicitly then the behavior is identical to 
-        #header=None. If file contains no header row, then you should explicitly pass header=None. 
-        #Explicitly pass header=0 to be able to replace existing names.
-        # --> File has no header row, names must be passed explicitly. 
+        # header : int or list of ints. If file contains no header row, 
+        #then you should explicitly pass header=None. 
 
         self.train = self.train.as_matrix()
         self.test = self.test.as_matrix()
-        # .as_matrix method ... 
+        # .as_matrix method converts the dataframe to its Numpy-array representation.
+        # i.e. >>> type(self.train) --> numpy.ndarray
+        print(self.train.shape)
 
         self.train = self.train.transpose()
         self.test = self.test.transpose()
@@ -70,11 +77,15 @@ class neuralnet(object):
 
         self.labels_train = np_utils.to_categorical(self.labels_train,self.nb_classes)
         self.labels_test  = np_utils.to_categorical(self.labels_test,self.nb_classes)
-        # 
+        # np_utils ?
 
     def buildModel(self):
         self.model = Sequential()
+        # The Sequential model is a linear stack of layers.
+        # You can create a Sequential model by passing a list of layer instances to the constructor
         self.model.add(Dense(80,input_shape=(80,)))
+        # the first layer in a Sequential model (and only the first, because following layers can do automatic shape inference) 
+        #needs to receive information what input shape to expect. 
         self.model.add(Activation('relu'))
         self.model.add(Dense(40))
         self.model.add(Activation('relu'))
