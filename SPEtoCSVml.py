@@ -5,51 +5,159 @@ import loadSPEfilesML
 # from csv import writer
 import csv
 
-def writeSPEtoCSV(spefilename):
-    '''converts wavelengths and counts from spe file to new csv file.'''
-    data = loadSPEfilesML.load(spefilename)   # returns (f._wavelengths, img)
-    W = data[0]
-    I = data[1]
-    lenW = len(W)
-    spefilename0 = spefilename.split('/')[1] # get rid of directory name
-    csvfilename = spefilename0.split('.')[0]+'.csv'
-    # with open(‘name.txt’, ‘sth’ ) as f: followed by indented code closes file automatically at end of indented block
+def writeSPEtoCSV(filename,bckgrnd):
+    '''converts counts from spe file to new csv file'''
+    # labellst = input('Is this a label list? (Y/N)')
+    csvfilename = 'data.csv'
+    data = loadSPEfilesML.load(filename)   # returns (f._wavelengths, img)
+    bgdata = loadSPEfilesML.load(bckgrnd)
+    # W = data[0]
+    I = Bckgrnd(data[1],bgdata[1])
+    lenI = len(I)
     with open(csvfilename,'w') as f:
         writer = csv.writer(f)
-        writer.writerows([W,I]) # list of lists
+        # writer.writerows([W,I]) # list of lists
+        writer.writerow(I)
     print("Writing complete")
-    return csvfilename,lenW
+    return csvfilename,lenI
 
-def appendSPEtoCSV(spefilename,csvfilename,lenW):
+def appendSPEtoCSV(filename,bckgrnd,csvfilename,lenI):
     '''appends counts from spe file to given csv file.'''
-    # print(spefilename)
-    data = loadSPEfilesML.load(spefilename)
-    I = data[1]
+    data = loadSPEfilesML.load(filename)
+    bgdata = loadSPEfilesML.load(bckgrnd)
+    I = Bckgrnd(data[1],bgdata[1])
     sz = len(I)
-    if sz == lenW:
+    if sz == lenI:
         with open(csvfilename,'a') as f:
             writer = csv.writer(f)
             writer.writerow(I) # list of lists
             wrongsizefile='-'
     else:
-        wrongsizefile = spefilename# wrong size
+        wrongsizefile = filename.split('/')[1] # wrong size
     return csvfilename,wrongsizefile
 
-def allSPEtoCSV(spefilenames):
-    '''takes list of spefilenames, returns csv file.'''
-    wr = writeSPEtoCSV('WS2reflection_spectra/'+spefilenames[0])
+def allSPEtoCSV(spefilenames,path):
+    '''takes list of spefilenames, returns csv file.
+    filename format: date-material_num-misc.spe
+    '''
+    import fixfilenames as ffn
+    (newfilenames,bckgrnds) = ffn.FixFilenames(path)
+    # ~ create csv file ~
+    wr = writeSPEtoCSV('WS2reflection_spectra_copy/'+newfilenames[0],'WS2reflection_spectra_copy/'+bckgrnds[0])
     csvfile = wr[0]
-    lenW = wr[1]
-    # print(len(spefilenames)) = 112
-    # range(1,len(spefilenames) = [1,2,...,111]
+    lenI = wr[1]
     # for i in range(1,len(spefilenames)):
     #     spefile = 'WS2reflection_spectra/'+spefilenames[i]
     wrongsizefiles = []
-    for spefile in spefilenames[1:-1]:
-        ap = appendSPEtoCSV('WS2reflection_spectra/'+spefile,csvfile,lenW)
+    # ~ add rows to csv file ~
+    # for spefile in newfilenames[1:-1]:
+    remaining = newfilenames[1:-1]
+    for i in range(len(remaining)):
+        spefile = remaining[i]
+        bckgrnd = bckgrnds[i]
+        ap = appendSPEtoCSV('WS2reflection_spectra_copy/'+spefile,'WS2reflection_spectra_copy/'+bckgrnd,csvfile,lenI)
         csvfile = ap[0]
         if ap[1] != '-':
             wrongsizefiles.append(ap[1])
-    print('length spefiles= ',len(spefilenames))
     # print('length wrongsizefiles= ',len(wrongsizefiles))
-    return csvfile,wrongsizefiles
+    return csvfile,newfilenames,wrongsizefiles
+
+
+# # # TO DO:
+# <check> SORT BACKGROUND FILES
+# <check> remove (or do something with) wrongsizefiles
+# <check> PREPROCESS DATA--remove background? smooth?
+# <check> divide into train and test groups
+
+# ~ Preprocessing ~
+
+# def Cut():
+#     '''make files same size'''
+# replace wrongsizefiles thing with making files the same size, if they're close in size
+
+# def Normalize(I):
+#     I = savitzky_golay(I, 31, 4)
+#     mx = max(I)
+#     N = [n/mx for n in I]
+#     return N
+
+# to remove background, associate each spefile with its bckgrnd file
+def Bckgrnd(I_raw,b_raw):
+    I = savitzky_golay(I_raw, 31, 4)
+    b = savitzky_golay(b_raw, 31, 4)
+    s = [((I[i]/b[i])-1) for i in range(len(I))]
+    return s
+
+
+# http://scipy-cookbook.readthedocs.io/items/SavitzkyGolay.html
+def savitzky_golay(y, window_size, order, deriv=0, rate=1):
+    """Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
+    The Savitzky-Golay filter removes high frequency noise from data.
+    It has the advantage of preserving the original shape and
+    features of the signal better than other types of filtering
+    approaches, such as moving averages techniques.
+    Parameters
+    ----------
+    y : array_like, shape (N,)
+        the values of the time history of the signal.
+    window_size : int
+        the length of the window. Must be an odd integer number.
+    order : int
+        the order of the polynomial used in the filtering.
+        Must be less then `window_size` - 1.
+    deriv: int
+        the order of the derivative to compute (default = 0 means only smoothing)
+    Returns
+    -------
+    ys : ndarray, shape (N)
+        the smoothed signal (or it's n-th derivative).
+    Notes
+    -----
+    The Savitzky-Golay is a type of low-pass filter, particularly
+    suited for smoothing noisy data. The main idea behind this
+    approach is to make for each point a least-square fit with a
+    polynomial of high order over a odd-sized window centered at
+    the point.
+    Examples
+    --------
+    t = np.linspace(-4, 4, 500)
+    y = np.exp( -t**2 ) + np.random.normal(0, 0.05, t.shape)
+    ysg = savitzky_golay(y, window_size=31, order=4)
+    import matplotlib.pyplot as plt
+    plt.plot(t, y, label='Noisy signal')
+    plt.plot(t, np.exp(-t**2), 'k', lw=1.5, label='Original signal')
+    plt.plot(t, ysg, 'r', label='Filtered signal')
+    plt.legend()
+    plt.show()
+    References
+    ----------
+    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of
+       Data by Simplified Least Squares Procedures. Analytical
+       Chemistry, 1964, 36 (8), pp 1627-1639.
+    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific Computing
+       W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
+       Cambridge University Press ISBN-13: 9780521880688
+    """
+    import numpy as np
+    from math import factorial
+
+    try:
+        window_size = np.abs(np.int(window_size))
+        order = np.abs(np.int(order))
+    except ValueError as msg:
+        raise ValueError("window_size and order have to be of type int")
+    if window_size % 2 != 1 or window_size < 1:
+        raise TypeError("window_size size must be a positive odd number")
+    if window_size < order + 2:
+        raise TypeError("window_size is too small for the polynomials order")
+    order_range = range(order+1)
+    half_window = (window_size -1) // 2
+    # precompute coefficients
+    b = np.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
+    m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+    # pad the signal at the extremes with
+    # values taken from the signal itself
+    firstvals = y[0] - np.abs( y[1:half_window+1][::-1] - y[0] )
+    lastvals = y[-1] + np.abs(y[-half_window-1:-1][::-1] - y[-1])
+    y = np.concatenate((firstvals, y, lastvals))
+    return np.convolve( m[::-1], y, mode='valid')
