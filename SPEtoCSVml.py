@@ -43,7 +43,7 @@ def allSPEtoCSV(spefilenames,path):
     import fixfilenames as ffn
     (newfilenames,bckgrnds) = ffn.FixFilenames(path)
     # ~ create csv file ~
-    wr = writeSPEtoCSV('WS2reflection_spectra_copy/'+newfilenames[0],'WS2reflection_spectra_copy/'+bckgrnds[0])
+    wr = writeSPEtoCSV('WS2reflection_spectra/'+newfilenames[0],'WS2reflection_spectra/'+bckgrnds[0])
     csvfile = wr[0]
     lenI = wr[1]
     # for i in range(1,len(spefilenames)):
@@ -55,19 +55,12 @@ def allSPEtoCSV(spefilenames,path):
     for i in range(len(remaining)):
         spefile = remaining[i]
         bckgrnd = bckgrnds[i]
-        ap = appendSPEtoCSV('WS2reflection_spectra_copy/'+spefile,'WS2reflection_spectra_copy/'+bckgrnd,csvfile,lenI)
+        ap = appendSPEtoCSV('WS2reflection_spectra/'+spefile,'WS2reflection_spectra/'+bckgrnd,csvfile,lenI)
         csvfile = ap[0]
         if ap[1] != '-':
             wrongsizefiles.append(ap[1])
     # print('length wrongsizefiles= ',len(wrongsizefiles))
     return csvfile,newfilenames,wrongsizefiles
-
-
-# # # TO DO:
-# <check> SORT BACKGROUND FILES
-# <check> remove (or do something with) wrongsizefiles
-# <check> PREPROCESS DATA--remove background? smooth?
-# <check> divide into train and test groups
 
 # ~ Preprocessing ~
 
