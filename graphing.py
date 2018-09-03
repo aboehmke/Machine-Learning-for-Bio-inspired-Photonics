@@ -141,8 +141,8 @@ def find_exciton_peak_distance_ws2(wavelength, intensity):
     return np.array([maxes[1]-maxes[0], maxes[2]-maxes[1], maxes[2]-maxes[0]])
 
 
-def display_spectra():
-    data = lf.load(path.join('Data\WS2 reflection spectra[130]\WS2 reflection spectra', 'reflctn 20180527 WS2_3_1.spe'))
+def display_spectra(filename):
+    data = lf.load(path.join('Data\WS2 reflection spectra[130]\WS2 reflection spectra', filename))
     wavelengths = data[0]
     intensities = data[1]
 
@@ -154,8 +154,8 @@ def display_spectra():
         print(str(wavelengths[i]) + '\t\t' + str(intensities[i]))
     '''
     figure, (graph_1, graph_2, graph_3) = plt.subplots(1, 3, sharey=True)
-    figure.suptitle('Spectra')
+    figure.suptitle(filename)
 
     plot_all(wavelengths, intensities, graph_1, graph_2, graph_3)
-    #print('Distances: ' + str(find_exciton_peak_distance_ws2(wavelengths, intensities)))
+    # print('Distances: ' + str(find_exciton_peak_distance_ws2(wavelengths, intensities)))
     plt.show()

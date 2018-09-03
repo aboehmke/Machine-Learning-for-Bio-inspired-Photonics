@@ -21,7 +21,7 @@ def LabelData(spefilenames,wrongsizefiles):
     import numpy as np
     labels = []
     for i in range(len(spefilenames)):
-        graphing.display_spectra()
+        graphing.display_spectra(spefilenames[i])
         if spefilenames[i] not in wrongsizefiles:
             plotData(spefilenames[i])
             label = input("number of layers = ")
