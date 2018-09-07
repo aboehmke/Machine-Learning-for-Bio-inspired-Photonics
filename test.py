@@ -9,11 +9,12 @@ import Label
 
 spefilenames = []
 # path to spe files:
-path = '/Users/AB/Downloads/WS2reflection_spectra/'
+# path = '/Users/AB/Downloads/WS2reflection_spectra/'
+path = 'D:\Official\Internship Files\ML\Data\WS2 reflection spectra[130]\WS2 reflection spectra\\'
 for root,dirs,files in os.walk(path):
-#    print(root)
-#    print(dirs)
-#    print(files)
+    # print(root)
+    # print(dirs)
+    # print(files)
     for file in files:
         if file.endswith('.spe'):
             spefilenames.append(file)

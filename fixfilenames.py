@@ -6,7 +6,7 @@ def FixFilenames(path):
     Background files should contain the label 'bckgrnd'.
     '''
     import os
-    for root,dirs,filenames in os.walk(path):
+    for root, dirs, filenames in os.walk(path):
         # print('path: ',root)
         # print('directories: ',dirs)
         # print('filenames: ',filenames)
@@ -18,21 +18,21 @@ def FixFilenames(path):
             if filename.endswith('.spe'):
                 lst = filename.split()
                 x = 0
-                if len(lst) == 1: # if filename contains no spaces
-                    x = x+1
-                    newfilename = filename # then hopefully it's right
+                if len(lst) == 1:   # if filename contains no spaces
+                    x += 1
+                    newfilename = filename  # then hopefully it's right
                 else:
                     if lst[0] > '99':
                         # if alphabet instead of numerals at begin of name
                         if 'ws2' in lst[0].lower():
-                            lst.insert(0,'1')
+                            lst.insert(0, '1')
                         else:
                             # lst = lst[1:] # then get rid of begin of name.
                             del lst[0]
                             if len(lst) == 1: # then no misc part and date attached to 'WS2'
                                 lst0 = lst[0].split('_')
                                 lst[0] = lst0[0]
-                                lst.append( '_'.join(lst0[1:]) )
+                                lst.append('_'.join(lst0[1:]))
                     lst_new = []
                     lst_new.append(lst[0])
                     lst_new.append(lst[1])
@@ -43,8 +43,8 @@ def FixFilenames(path):
                 os.rename(path+filename, path+newfilename)
                 newfilenames.append(newfilename)
         # ~ extra ~
-        filenames,bckgrnds = GetBckgrnds(newfilenames)
-        return filenames,bckgrnds
+        filenames, bckgrnds = GetBckgrnds(newfilenames)
+        return filenames, bckgrnds
 
 def GetBckgrnds(filenames):
     '''returns list of the bckgrnd file corresponding to each spefile.
@@ -75,11 +75,11 @@ def GetBckgrnds(filenames):
     for j in range(len(fnames)):
         fname = fnames[j]
         lst = fname.split('-')
-        nm = lst[1].split('_')
+        nm = lst[1].split('_')                  # changed to 0 from 1
         if len(nm) <= 3: # get rid of '.spe'
             y = nm[-1].split('.')
             nm[-1] = y[0]
-        lst[1] = '_'.join(nm[:2])
+        lst[1] = '_'.join(nm[:2])               # changed to 0 from 1
         base = '-'.join(lst[:2])
         bg = bg_dct.get(base)
         if bg == None:

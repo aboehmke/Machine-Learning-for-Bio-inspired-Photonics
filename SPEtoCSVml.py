@@ -41,7 +41,7 @@ def allSPEtoCSV(spefilenames,path):
     filename format: date-material_num-misc.spe
     '''
     import fixfilenames as ffn
-    (newfilenames,bckgrnds) = ffn.FixFilenames(path)
+    (newfilenames, bckgrnds) = ffn.FixFilenames(path)
     # ~ create csv file ~
     wr = writeSPEtoCSV('WS2reflection_spectra/'+newfilenames[0],'WS2reflection_spectra/'+bckgrnds[0])
     csvfile = wr[0]
