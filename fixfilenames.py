@@ -53,7 +53,7 @@ def GetBckgrnds(filenames):
     # print('length file names before = ',len(filenames)) # = 76
     fnames = []
     bgnames = []
-    bg_dct = dict()
+    bg_dct = dict()             # list of backgrounds?
     for i in range(len(filenames)):
         fname = filenames[i]
         if 'bckgrnd' in fname:

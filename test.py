@@ -10,8 +10,8 @@ import Label
 spefilenames = []
 # path to spe files:
 # path = '/Users/AB/Downloads/WS2reflection_spectra/'
-path = 'D:\Official\Internship Files\ML\Data\WS2 reflection spectra[130]\WS2 reflection spectra\\'
-for root,dirs,files in os.walk(path):
+path = 'D:\Python Projects\MachineLearningNN\WS2 reflection spectra\\'      #workspace directory
+for root, dirs, files in os.walk(path):
     # print(root)
     # print(dirs)
     # print(files)
@@ -20,18 +20,22 @@ for root,dirs,files in os.walk(path):
             spefilenames.append(file)
 spefilenames.sort(key=str.lower) # https://www.asciitable.com/
 print('make data file')
-x = SPEtoCSVml.allSPEtoCSV(spefilenames, path)
-trainfile = x[0]
-newfilenames = x[1]
-wrongsizefiles = x[2]
+SPEtoCSVml.SPEtoCSV2(path, spefilenames)
 
-train = pd.read_csv(trainfile, header=None)
-train = train.as_matrix()
-print(train.shape)
+#x = SPEtoCSVml.allSPEtoCSV(spefilenames, path)
+#trainfile = x[0]
+#newfilenames = x[1]
+#wrongsizefiles = x[2]
 
-print('make label file')
-labels_train = Label.LabelsCSV(newfilenames, wrongsizefiles)
-labels_train = pd.read_csv(labels_train, header=None)
-labels_train = labels_train.as_matrix()
-print(labels_train.shape)
-labels_train = np.resize(labels_train, labels_train.shape[1])
+
+#train = pd.read_csv(trainfile, header=None)
+#train = train.as_matrix()
+#print(train.shape)
+
+
+#print('make label file')
+#labels_train = Label.LabelsCSV(newfilenames, wrongsizefiles)
+#labels_train = pd.read_csv(labels_train, header=None)
+#labels_train = labels_train.as_matrix()
+#print(labels_train.shape)
+#labels_train = np.resize(labels_train, labels_train.shape[1])
