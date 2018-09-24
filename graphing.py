@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 from os import path as path
 import time
 import smoothen
+import pandas as pd
+import math
 
 
 def plot_all(x, y, graph_1, graph_2, graph_3):
@@ -20,7 +22,7 @@ def plot_all(x, y, graph_1, graph_2, graph_3):
                   plot_name='LMaxSG', color='r')
     plot_annotate(x, yprime, graph_3, np.ndarray.tolist(find_local_maxes_ws2(x, yprime)),
                   plot_name='LMaxSG_WS2', color='r')
-
+    # doesnt work for awk peaks
 
 def plot_annotate(x, y, graph_location, maxes, plot_name='Unnamed', color='b'):
     """
@@ -141,21 +143,33 @@ def find_exciton_peak_distance_ws2(wavelength, intensity):
     return np.array([maxes[1]-maxes[0], maxes[2]-maxes[1], maxes[2]-maxes[0]])
 
 
-def display_spectra(filename):
-    data = lf.load(path.join('Data\WS2 reflection spectra[130]\WS2 reflection spectra', filename))
-    wavelengths = data[0]
-    intensities = data[1]
+def display_spectra(path, filename):
+    if filename[-4:] == '.spe':
+        data = lf.load(path + filename)
+        wavelengths = data[0]
+        intensities = data[1]
 
-    wavelengths = np.array(wavelengths)
-    intensities = np.array(intensities)
-    '''
+        wavelengths = np.array(wavelengths)
+        intensities = np.array(intensities)
+    elif filename[-4:] == '.csv':
+        data = pd.read_csv(path + filename).values
+        wavelengths = data[:, 1]
+        intensities = data[:, 2]
+
+
     print('Wavelength\t\t\t\tIntensity')
     for i in range(0, wavelengths.size):
         print(str(wavelengths[i]) + '\t\t' + str(intensities[i]))
-    '''
+
+
     figure, (graph_1, graph_2, graph_3) = plt.subplots(1, 3, sharey=True)
     figure.suptitle(filename)
 
     plot_all(wavelengths, intensities, graph_1, graph_2, graph_3)
     # print('Distances: ' + str(find_exciton_peak_distance_ws2(wavelengths, intensities)))
     plt.show()
+
+
+if __name__ == '__main__':
+    # display_spectra('D:\Python Projects\MachineLearningNN\WS2 reflection spectra\WS2 reflection spectra - CSV\\', '20170815_WS2_07_2 on SiO2.spe')
+    display_spectra('D:\Python Projects\MachineLearningNN\WS2 reflection spectra\\', '20180423 WS2_4 c.spe')

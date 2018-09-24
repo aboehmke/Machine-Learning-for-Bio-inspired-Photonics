@@ -10,19 +10,20 @@ import Label
 spefilenames = []
 # path to spe files:
 # path = '/Users/AB/Downloads/WS2reflection_spectra/'
-path = 'D:\Python Projects\MachineLearningNN\WS2 reflection spectra\\'      #workspace directory
+path = 'D:\Python Projects\MachineLearningNN\WS2 reflection spectra\\'      # directory
 for root, dirs, files in os.walk(path):
-    # print(root)
-    # print(dirs)
-    # print(files)
     for file in files:
         if file.endswith('.spe'):
             spefilenames.append(file)
 spefilenames.sort(key=str.lower) # https://www.asciitable.com/
-print('make data file')
+# print('make data file')
 SPEtoCSVml.SPEtoCSV2(path, spefilenames)
 
-#x = SPEtoCSVml.allSPEtoCSV(spefilenames, path)
+path = 'D:\Python Projects\MachineLearningNN\WS2 reflection spectra\WS2 reflection spectra - CSV\\'
+
+
+
+x = SPEtoCSVml.allSPEtoCSV(spefilenames, path)
 #trainfile = x[0]
 #newfilenames = x[1]
 #wrongsizefiles = x[2]
