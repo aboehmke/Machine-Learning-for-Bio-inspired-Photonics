@@ -7,16 +7,19 @@ import csv
 import smoothen
 import pandas as pd
 import os.path as path
+import os
 
 
-def SPEtoCSV2(path, spefilenames):
+def SPEtoCSV2(spe_path, csv_path, spefilenames):
     # make sure
     for filename in spefilenames:
-        data = loadSPEfilesML.load(path + filename)
+        data = loadSPEfilesML.load(spe_path + filename)
         raw = {'Wavelengths': data[0], 'Intensities': data[1]}
         df = pd.DataFrame(raw, columns=['Wavelengths', 'Intensities'])
-        df.to_csv(path + 'WS2 reflection spectra - CSV\\' + filename[:-4] + '.csv')
-    print('Successfully converted .spe files to .csv files!')
+        newfilename = csv_path + filename[:-4] + '.csv'
+        if newfilename not in os.listdir(csv_path):
+            df.to_csv(newfilename)
+    print('Successfully converted all .spe files to .csv files!')
 
 
 def writeSPEtoCSV(filename, bckgrnd):
